@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="dark">
+<html lang="id" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -21,7 +21,7 @@
             </div>
             <div class="header-actions">
                 <button class="btn-theme" onclick="toggleTheme()" title="Ganti Tema">
-                    <span id="themeIcon">🌙</span>
+                    <span id="themeIcon">☀️</span>
                 </button>
                 <button class="btn-cart" onclick="toggleCart()">
                     🛒 <span class="cart-text">Keranjang</span>
@@ -30,6 +30,13 @@
             </div>
         </div>
     </nav>
+
+    <!-- ===== NOTIFIKASI DARI PROFILE ===== -->
+    <div id="pesanNotif" class="pesan-notif" style="display:none">
+        <span class="pesan-notif-icon">👋</span>
+        <span class="pesan-notif-text">Silakan pilih menu terlebih dahulu, lalu tambahkan ke keranjang untuk melanjutkan pesanan!</span>
+        <button class="pesan-notif-close" onclick="tutupNotif()">×</button>
+    </div>
 
     <!-- ===== HERO ===== -->
     <section class="hero">
@@ -54,12 +61,13 @@
     </section>
 
     <!-- ===== MENU PILIHAN ===== -->
-    <div class="container">
+    <div class="container" id="menuSection">
         <div class="section-title">Menu <span>Pilihan</span> 🔥</div>
         <div class="products">
 
-            <div class="product-card">
+            <div class="product-card" data-stock="true">
                 <img src="image/Cireng.png" alt="Cireng" class="product-image">
+                <span class="stock-badge in-stock">✅ Stok Tersedia</span>
                 <div class="product-info">
                     <div class="product-name">Cireng</div>
                     <div class="product-desc">Cireng enak banget loh</div>
@@ -75,8 +83,9 @@
                 </div>
             </div>
 
-            <div class="product-card">
+            <div class="product-card" data-stock="true">
                 <img src="image/Jihu.png" alt="Jihu" class="product-image">
+                <span class="stock-badge in-stock">✅ Stok Tersedia</span>
                 <div class="product-info">
                     <div class="product-name">Jihu</div>
                     <div class="product-desc">Jihu enak banget loh harga murah meriah</div>
@@ -92,8 +101,9 @@
                 </div>
             </div>
 
-            <div class="product-card">
+            <div class="product-card" data-stock="true">
                 <img src="image/Pentol Kecil.png" alt="Pentol Bakso Kecil" class="product-image">
+                <span class="stock-badge in-stock">✅ Stok Tersedia</span>
                 <div class="product-info">
                     <div class="product-name">Pentol Bakso Kecil</div>
                     <div class="product-desc">Pentol bakso kecil enak banget loh</div>
@@ -109,8 +119,9 @@
                 </div>
             </div>
 
-            <div class="product-card">
+            <div class="product-card" data-stock="true">
                 <img src="image/Bakso.png" alt="Bakso" class="product-image">
+                <span class="stock-badge in-stock">✅ Stok Tersedia</span>
                 <div class="product-info">
                     <div class="product-name">Bakso</div>
                     <div class="product-desc">Bakso segar enak banget loh</div>
@@ -126,8 +137,9 @@
                 </div>
             </div>
 
-            <div class="product-card">
+            <div class="product-card" data-stock="true">
                 <img src="image/Pentol Tahu Daging.png" alt="Pentol Tahu Daging" class="product-image">
+                <span class="stock-badge in-stock">✅ Stok Tersedia</span>
                 <div class="product-info">
                     <div class="product-name">Pentol Tahu Daging</div>
                     <div class="product-desc">Pentol tahu daging enak banget loh</div>
@@ -143,8 +155,9 @@
                 </div>
             </div>
 
-            <div class="product-card">
+            <div class="product-card" data-stock="true">
                 <img src="image/Tahu Walek.png" alt="Tahu Walek" class="product-image">
+                <span class="stock-badge in-stock">✅ Stok Tersedia</span>
                 <div class="product-info">
                     <div class="product-name">Tahu Walek</div>
                     <div class="product-desc">Tahu walek enak banget loh</div>
@@ -173,7 +186,7 @@
         <p class="footer-copy">© 2026 HA BIBI SNACK CORNER · Ibu Siti · All rights reserved</p>
     </footer>
 
-    <!-- Panel Keranjang -->
+    <!-- ===== PANEL KERANJANG ===== -->
     <div class="cart-panel" id="cartPanel">
         <div class="cart-header">
             <h2>🛒 Keranjang Belanja</h2>
@@ -241,22 +254,29 @@
         </div>
     </div>
 
-    <!-- Modal QRIS -->
+    <!-- ===== MODAL QRIS ===== -->
     <div class="modal" id="qrisModal">
         <div class="modal-content qris-modal-content">
             <div class="modal-header">
                 <h2>📱 Pembayaran QRIS</h2>
-                <button class="close-btn" onclick="closeQris()">×</button>
+                <button class="close-btn" onclick="closeQrisAndReset()">×</button>
             </div>
             <p class="qris-info">Scan QR di bawah untuk melakukan pembayaran</p>
-            <img src="image/qris.png" alt="QRIS" class="qris-img">
+            <img src="image/QRIS.jpeg" alt="QRIS" class="qris-img">
             <p class="qris-amount">Total: <strong id="qrisAmount"></strong></p>
             <p class="qris-note">Setelah bayar, pesananmu akan segera kami proses! 🎉</p>
-            <button class="btn-wa-order" onclick="doSendWA()">📲 Lanjut Kirim Pesanan ke WA</button>
+            <div class="qris-actions">
+                <a id="qrisDownloadBtn" class="qris-download" href="image/QRIS.jpeg" download>⬇️ Unduh QRIS</a>
+                <label class="qris-confirm">
+                    <input type="checkbox" id="qrisConfirmCheckbox">
+                    <span>Saya sudah melakukan pembayaran</span>
+                </label>
+            </div>
+            <button id="qrisContinueBtn" class="btn-wa-order" onclick="doSendWA()" disabled>📲 Lanjut Kirim Pesanan ke WA</button>
         </div>
     </div>
 
-    <!-- Overlay -->
+    <!-- ===== OVERLAY ===== -->
     <div class="overlay" id="overlay" onclick="closeAllPanel()"></div>
 
     <script src="script.js"></script>
